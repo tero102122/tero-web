@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rico's Safari Salon</title>
+<meta name="description" content="Rico's Safari Salon: bathe, pamper and dress up muddy safari animals in a cheerful beauty salon game for kids.">
+<link rel="icon" href="img/icon.png">
+<style>
+  @font-face { font-family: 'Fredoka'; src: url('fonts/fredoka.woff2') format('woff2'); font-weight: 300 700; font-display: swap; }
+  :root { --pink: #FF4F8B; --pink-d: #C2185B; --pink-l: #FFE1EC; --yellow: #FFD23F; --teal: #2ED1C4; --purple: #8E5CE0;
+          --green: #2ED17A; --orange: #FF9F40; --ink: #4A2A5A; --muted: #7A6585; --bg: #FFF5F9; --line: #F6D6E4; }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body { margin: 0; color: var(--ink); font: 18px/1.55 'Fredoka', 'Arial Rounded MT Bold', system-ui, sans-serif; background: var(--bg); overflow-x: hidden; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; position: relative; }
+  a { color: var(--pink-d); }
+
+  .top { background: linear-gradient(180deg, #FF8FB4 0%, var(--pink) 100%); color: #fff; position: relative; overflow: hidden; padding-bottom: 70px; }
+  /* bubbles */
+  .top::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5;
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(255,255,255,.55) 0 14px, transparent 15px),
+      radial-gradient(circle at 85% 15%, rgba(255,255,255,.45) 0 22px, transparent 23px),
+      radial-gradient(circle at 70% 75%, rgba(255,255,255,.35) 0 10px, transparent 11px),
+      radial-gradient(circle at 30% 85%, rgba(255,255,255,.4) 0 18px, transparent 19px),
+      radial-gradient(circle at 50% 40%, rgba(255,255,255,.3) 0 8px, transparent 9px); }
+  .top::after { content: ""; position: absolute; left: -5%; right: -5%; bottom: -40px; height: 90px; background: var(--bg); border-radius: 50% 50% 0 0; }
+  nav { display: flex; justify-content: space-between; padding: 18px 0; font-weight: 600; position: relative; z-index: 1; }
+  nav a { color: #fff; text-decoration: none; }
+
+  .hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 24px; align-items: center; padding: 16px 0 10px; position: relative; z-index: 1; }
+  .hero h1 { margin: 0; font-weight: 700; font-size: clamp(44px, 7.5vw, 80px); line-height: 1.02; text-shadow: 0 5px 0 var(--pink-d); }
+  .hero h1 small { display: block; font-size: .42em; color: var(--yellow); text-shadow: 0 3px 0 var(--pink-d); font-weight: 600; }
+  .hero p { font-size: 1.25rem; margin: 18px 0 26px; max-width: 30ch; }
+  .lion { position: relative; display: grid; place-items: center; }
+  .lion .disc { width: 100%; max-width: 340px; aspect-ratio: 1; border-radius: 50%; border: 8px solid rgba(255,255,255,.55);
+                background: url(img/splash.png) 50% 47% / 150% auto no-repeat, linear-gradient(180deg, #FF8FB4, #FF4F8B);
+                box-shadow: 0 10px 0 var(--pink-d); }
+
+  /* store buttons: an href of "#" shows "Coming soon"; paste the real store URL to activate */
+  .stores { display: flex; flex-wrap: wrap; gap: 12px; }
+  .store { position: relative; display: inline-flex; align-items: center; gap: 10px; min-width: 180px; padding: 10px 20px; border-radius: 99px;
+           background: #fff; color: var(--ink); text-decoration: none; line-height: 1.1; box-shadow: 0 5px 0 var(--pink-d); transition: transform .1s; }
+  .store svg { width: 26px; height: 26px; flex: none; }
+  .store small { display: block; font-size: .7rem; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .store b { font-size: 1.15rem; font-weight: 600; }
+  .store:not([href="#"]):active { transform: translateY(4px); box-shadow: 0 1px 0 var(--pink-d); }
+  .store[href="#"] { opacity: .8; pointer-events: none; }
+  .store .soon { display: none; position: absolute; top: -12px; right: -6px; background: var(--yellow); color: var(--ink); font-size: .72rem; font-weight: 700; padding: 2px 10px; border-radius: 99px; }
+  .store[href="#"] .soon { display: block; }
+
+  section { padding: 44px 0 8px; }
+  h2 { font-size: clamp(1.7rem, 3.6vw, 2.3rem); font-weight: 700; margin: 0 0 8px; text-align: center; }
+  .sub { text-align: center; color: var(--muted); margin: 0 auto 28px; max-width: 46ch; }
+
+  .stations { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .st { border-radius: 24px; padding: 20px 16px; text-align: center; border: 3px solid #fff; box-shadow: 0 6px 0 rgba(74,42,90,.08); }
+  .st .e { font-size: 38px; line-height: 1; display: block; margin-bottom: 8px; }
+  .st b { display: block; font-size: 1.15rem; }
+  .st span { font-size: .95rem; color: var(--muted); }
+
+  .animals { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .animal { background: #fff; border: 2.5px solid var(--line); border-radius: 99px; padding: 6px 16px; font-weight: 600; font-size: 1rem; }
+
+  .parents { background: #fff; border: 3px solid var(--line); border-radius: 28px; padding: 26px 28px; display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start; }
+  .parents .badge { width: 64px; height: 64px; border-radius: 20px; background: var(--teal); color: #fff; display: grid; place-items: center; font-size: 34px; box-shadow: 0 5px 0 #1fa79c; }
+  .parents h2 { text-align: left; font-size: 1.6rem; }
+  .parents ul { margin: 8px 0 0; padding-left: 20px; }
+  .parents li { margin: 4px 0; }
+
+  footer { margin-top: 56px; background: var(--pink); color: #fff; padding: 24px 0 36px; font-weight: 600; }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; }
+  footer a { color: #fff; }
+
+  @media (max-width: 860px) { .stations { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 680px) {
+    .hero { grid-template-columns: 1fr; text-align: center; }
+    .hero p { margin-left: auto; margin-right: auto; }
+    .stores { justify-content: center; }
+    .lion { order: -1; } .lion .disc { max-width: 220px; }
+    .parents { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="wrap">
+    <nav><a href="../">← Tero Games</a><a href="privacy/">Privacy Policy</a></nav>
+    <header class="hero">
+      <div>
+        <h1>Rico's <small>Safari</small>Salon</h1>
+        <p>Muddy animals are waiting! Bathe them, pamper them, dress them up and snap the perfect photo.</p>
+        <div class="stores">
+          <!-- Paste the Google Play URL in href (replace "#") -->
+          <a class="store" href="#" data-store="google-play" aria-label="Get Rico's Safari Salon on Google Play">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#2ED1C4" d="M4 2.5v19l10-9.5z"/><path fill="#FFD23F" d="M14 12l3.2 3.1 3.6-2a1.3 1.3 0 0 0 0-2.2l-3.6-2z"/><path fill="#FF4F8B" d="M4 21.5l13.2-6.4L14 12z"/><path fill="#8E5CE0" d="M4 2.5l10 9.5 3.2-3.1z"/></svg>
+            <span><small>Get it on</small><b>Google Play</b></span><span class="soon">Coming soon!</span>
+          </a>
+          <!-- Paste the App Store URL in href (replace "#") -->
+          <a class="store" href="#" data-store="app-store" aria-label="Download Rico's Safari Salon on the App Store">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4A2A5A" d="M16.4 12.6c0-2.4 2-3.5 2-3.6-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.8-.9-3-.8C6.9 7.3 5.4 8.2 4.6 9.7c-1.7 2.9-.4 7.2 1.2 9.6.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8s1.9.8 3.1.8c1.3 0 2.1-1.2 2.9-2.4.9-1.3 1.3-2.6 1.3-2.7 0 0-2.8-1-2.8-4zM14.1 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
+            <span><small>Download on the</small><b>App Store</b></span><span class="soon">Coming soon!</span>
+          </a>
+        </div>
+      </div>
+      <div class="lion"><div class="disc" role="img" aria-label="Rico the lion wearing a golden crown"></div></div>
+    </header>
+  </div>
+</div>
+
+<div class="wrap">
+  <section>
+    <h2>The full salon treatment</h2>
+    <p class="sub">Seven fun mini-games and a photo finish. Every animal gets the royal treatment.</p>
+    <div class="stations">
+      <div class="st" style="background:#CDEEFF"><span class="e">🛁</span><b>Bubble Bath</b><span>Scrub off the mud</span></div>
+      <div class="st" style="background:#DDF6DC"><span class="e">🥒</span><b>Facial</b><span>A fresh, glowing face</span></div>
+      <div class="st" style="background:#FFE1EC"><span class="e">💅</span><b>Manicure</b><span>Paint pretty claws</span></div>
+      <div class="st" style="background:#FFEBD2"><span class="e">🐾</span><b>Pedicure</b><span>Pampered paws</span></div>
+      <div class="st" style="background:#EBDDFF"><span class="e">💄</span><b>Makeup</b><span>Blush, lashes and sparkle</span></div>
+      <div class="st" style="background:#FFF0CF"><span class="e">🌸</span><b>Perfume</b><span>Spray a sweet scent</span></div>
+      <div class="st" style="background:#D8F5F2"><span class="e">👒</span><b>Dress Up</b><span>Hats, glasses and outfits</span></div>
+      <div class="st" style="background:#FFE9A8"><span class="e">📸</span><b>Photo Finish</b><span>Save it to the album</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Twelve animal friends</h2>
+    <p class="sub">Level up to welcome new guests to the salon.</p>
+    <div class="animals">
+      <span class="animal">🦁 Lion</span><span class="animal">🦓 Zebra</span><span class="animal">🐒 Monkey</span><span class="animal">🐘 Elephant</span>
+      <span class="animal">🦒 Giraffe</span><span class="animal">🦛 Hippo</span><span class="animal">🐆 Cheetah</span><span class="animal">🦏 Rhino</span>
+      <span class="animal">🐯 Tiger</span><span class="animal">🐱 Kitty</span><span class="animal">🐶 Puppy</span><span class="animal">🦊 Fennec Fox</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="parents">
+      <div class="badge" aria-hidden="true">♥</div>
+      <div>
+        <h2>For parents</h2>
+        <ul>
+          <li>Made for kids. No accounts, no chat and no in-app purchases.</li>
+          <li>Ads are optional: a short video plays only when your child taps to earn extra coins. Coins can also be earned just by playing.</li>
+          <li>Ads are child-directed and not personalized. The game does not use the advertising ID.</li>
+          <li>Progress is saved only on the device, and the game works offline.</li>
+        </ul>
+        <p style="margin:12px 0 0">Read the full <a href="privacy/">privacy policy</a>.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Tero Games</span>
+    <span><a href="privacy/">Privacy Policy</a> · <a href="mailto:tero102122@gmail.com">tero102122@gmail.com</a></span>
+  </div>
+</footer>
+</body>
+</html>

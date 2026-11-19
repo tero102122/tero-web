@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tero Games</title>
+<meta name="description" content="Tero Games: small, polished mobile games. Tero, Terrifico and Rico's Safari Salon.">
+<link rel="icon" href="tero/img/icon.png">
+<style>
+  :root {
+    --bg1: #0b0f2e; --bg2: #1d0b33; --text: #f2f2fa; --muted: #a9a9c8;
+    --cyan: #4df3ff; --cream: #ffe9a8; --red: #ff3b5c;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg1); }
+  body {
+    margin: 0; min-height: 100vh; color: var(--text);
+    font: 16px/1.6 "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+    background: linear-gradient(180deg, var(--bg1) 0%, #120c38 55%, var(--bg2) 100%);
+    overflow-x: hidden;
+  }
+  /* starfield */
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .8;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 28% 72%, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 44% 34%, #cfd6ff 50%, transparent 51%),
+      radial-gradient(1px 1px at 63% 12%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 77% 58%, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 88% 26%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 8% 88%, #cfd6ff 50%, transparent 51%),
+      radial-gradient(1px 1px at 54% 92%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 93% 84%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 36% 6%, #fff 50%, transparent 51%);
+    background-size: 420px 420px;
+  }
+  .wrap { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+  header.hero { padding: 72px 0 40px; display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: center; }
+  .wordmark { font-weight: 800; font-size: clamp(64px, 14vw, 132px); line-height: .9; letter-spacing: .02em; margin: 0; }
+  .wordmark small { display: block; font-size: .22em; letter-spacing: .5em; color: var(--cream); font-weight: 600; margin-top: 14px; }
+  .lede { color: var(--muted); font-size: 1.15rem; max-width: 34ch; margin: 22px 0 0; }
+
+  /* little orbit animation, echoing Tero's star + tether */
+  .orbit { width: 200px; height: 200px; position: relative; flex: none; }
+  .orbit .ring { position: absolute; inset: 20px; border-radius: 50%; border: 3px solid var(--cream); box-shadow: 0 0 24px rgba(255,233,168,.25); }
+  .orbit .star { position: absolute; left: 50%; top: 50%; width: 34px; height: 34px; margin: -17px; border-radius: 50%; background: #fff4dc; box-shadow: 0 0 0 14px rgba(255,244,220,.08), 0 0 0 30px rgba(255,244,220,.05); }
+  .orbit .arm { position: absolute; left: 50%; top: 50%; width: 80px; height: 3px; transform-origin: 0 50%; animation: spin 4s linear infinite; }
+  .orbit .arm::before { content: ""; position: absolute; inset: 0; background: var(--cyan); border-radius: 2px; }
+  .orbit .arm::after { content: ""; position: absolute; right: -16px; top: -14px; width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(circle, #fff 0 30%, var(--cyan) 32%); box-shadow: 0 0 22px 8px rgba(77,243,255,.35); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .orbit .arm { animation: none; transform: rotate(-35deg); } }
+
+  h2.section { font-size: .85rem; letter-spacing: .3em; text-transform: uppercase; color: var(--cream); margin: 24px 0 18px; font-weight: 600; }
+
+  .games { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; padding-bottom: 72px; }
+  .card {
+    display: flex; flex-direction: column; border-radius: 22px; overflow: hidden; text-decoration: none;
+    color: inherit; transition: transform .2s ease, box-shadow .2s ease; box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+  .card:hover, .card:focus-visible { transform: translateY(-6px); box-shadow: 0 18px 40px rgba(0,0,0,.45); }
+  .card:focus-visible { outline: 3px solid var(--cyan); outline-offset: 4px; }
+  .card .art { aspect-ratio: 1024 / 500; background-size: cover; background-position: center; }
+  .card .body { padding: 18px 20px 22px; display: flex; gap: 14px; align-items: flex-start; flex: 1; }
+  .card .icon { width: 56px; height: 56px; border-radius: 14px; flex: none; box-shadow: 0 3px 10px rgba(0,0,0,.25); }
+  .card h3 { margin: 0 0 4px; font-size: 1.3rem; }
+  .card p { margin: 0; font-size: .95rem; }
+  .card .go { margin-top: 10px; display: inline-block; font-weight: 700; font-size: .9rem; }
+
+  .card.tero { background: #161236; border: 1px solid #2a2550; }
+  .card.tero h3 { color: #fff; } .card.tero p { color: var(--muted); } .card.tero .go { color: var(--cyan); }
+
+  .card.terrifico { background: #fff; color: #26304a; font-family: "Trebuchet MS", "Segoe UI", Roboto, sans-serif; }
+  .card.terrifico h3 { font-weight: 800; } .card.terrifico p { color: #5b6784; } .card.terrifico .go { color: #e2603d; }
+
+  .card.rico { background: #FFF5F9; color: #4A2A5A; font-family: "Fredoka", "Arial Rounded MT Bold", system-ui, sans-serif; }
+  .card.rico .art { background: url(rico-safari-salon/img/splash.png) 50% 52.5% / 85% auto no-repeat, linear-gradient(180deg, #FF8FB4, #FF4F8B); }
+  .card.rico p { color: #7A6585; } .card.rico .go { color: #E0336F; }
+
+  footer { position: relative; z-index: 1; border-top: 1px solid #2a2550; padding: 24px 0 40px; color: var(--muted); font-size: .9rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+  footer a { color: var(--cyan); }
+
+  @media (max-width: 900px) { .games { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 640px) {
+    header.hero { grid-template-columns: 1fr; padding-top: 48px; }
+    .orbit { display: none; }
+    .games { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <h1 class="wordmark">TERO<small>GAMES</small></h1>
+      <p class="lede">Small mobile games, made with care. Easy to pick up, hard to put down.</p>
+    </div>
+    <div class="orbit" aria-hidden="true"><div class="ring"></div><div class="star"></div><div class="arm"></div></div>
+  </header>
+
+  <h2 class="section">Our games</h2>
+  <main class="games">
+    <a class="card tero" href="tero/">
+      <div class="art" style="background-image:url(tero/img/feature.png)" role="img" aria-label="Tero feature art"></div>
+      <div class="body">
+        <img class="icon" src="tero/img/icon.png" alt="">
+        <div>
+          <h3>Tero</h3>
+          <p>Hold to orbit, release to fling. Chain perfect catches up through the stars.</p>
+          <span class="go">Discover Tero →</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card terrifico" href="terrifico/">
+      <div class="art" style="background-image:url(terrifico/img/feature.png)" role="img" aria-label="Terrifico feature art"></div>
+      <div class="body">
+        <img class="icon" src="terrifico/img/icon.png" alt="">
+        <div>
+          <h3>Terrifico</h3>
+          <p>Place the signs, save the traffic. A colorful puzzle where every car must get home.</p>
+          <span class="go">Discover Terrifico →</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card rico" href="rico-safari-salon/">
+      <div class="art" role="img" aria-label="Rico the lion"></div>
+      <div class="body">
+        <img class="icon" src="rico-safari-salon/img/icon.png" alt="">
+        <div>
+          <h3>Rico's Safari Salon</h3>
+          <p>Bathe, pamper and dress up muddy safari animals, then snap their makeover photo.</p>
+          <span class="go">Discover Rico →</span>
+        </div>
+      </div>
+    </a>
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Tero Games</span>
+    <span>Privacy policies: <a href="tero/privacy/">Tero</a> · <a href="terrifico/privacy/">Terrifico</a> · <a href="rico-safari-salon/privacy/">Rico's Safari Salon</a></span>
+    <span>Contact: <a href="mailto:tero102122@gmail.com">tero102122@gmail.com</a></span>
+  </div>
+</footer>
+</body>
+</html>

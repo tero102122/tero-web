@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tero: Hold to Orbit</title>
+<meta name="description" content="Tero is a one-thumb orbital slingshot game. Hold to orbit, release to fling, chain perfect catches.">
+<link rel="icon" href="img/icon.png">
+<style>
+  :root { --bg: #0b0f2e; --bg2: #1d0b33; --panel: #161236; --line: #2a2550; --text: #f2f2fa; --muted: #a9a9c8;
+          --cream: #ffe9a8; --cyan: #4df3ff; --red: #ff3b5c; --violet: #7b6cff; }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body { margin: 0; color: var(--text); font: 16px/1.6 "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+         background: linear-gradient(180deg, var(--bg) 0%, #120c38 60%, var(--bg2) 100%); overflow-x: hidden; }
+  body::before { content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .8;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 28% 72%, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 44% 34%, #cfd6ff 50%, transparent 51%),
+      radial-gradient(1px 1px at 63% 12%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 77% 58%, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 88% 26%, #fff 50%, transparent 51%),
+      radial-gradient(1px 1px at 8% 88%, #cfd6ff 50%, transparent 51%),
+      radial-gradient(1px 1px at 54% 92%, #fff 50%, transparent 51%);
+    background-size: 380px 380px; }
+  .wrap { position: relative; max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+  a { color: var(--cyan); }
+
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; font-size: .95rem; }
+  nav a { color: var(--muted); text-decoration: none; } nav a:hover { color: #fff; }
+
+  .hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; padding: 40px 0 56px; }
+  .hero h1 { font-size: clamp(72px, 13vw, 140px); line-height: .9; margin: 0; font-weight: 800; letter-spacing: .02em; }
+  .tag { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: #cfd0e6; margin: 18px 0 4px; }
+  .tag2 { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--cream); margin: 0 0 28px; }
+  .hero-art { position: relative; }
+  .hero-art img { width: 100%; max-width: 380px; display: block; margin: 0 auto; border-radius: 28%; box-shadow: 0 0 80px rgba(77,243,255,.18), 0 20px 50px rgba(0,0,0,.5); }
+
+  /* store buttons: an href of "#" shows "Coming soon"; paste the real store URL to activate */
+  .stores { display: flex; flex-wrap: wrap; gap: 12px; }
+  .store { position: relative; display: inline-flex; align-items: center; gap: 10px; min-width: 180px; padding: 10px 18px;
+           border-radius: 14px; background: #000; border: 1.5px solid #555a7a; color: #fff; text-decoration: none; line-height: 1.15; }
+  .store svg { width: 26px; height: 26px; flex: none; }
+  .store small { display: block; font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: #c9c9dc; }
+  .store b { font-size: 1.15rem; font-weight: 600; }
+  .store:not([href="#"]):hover { border-color: var(--cyan); box-shadow: 0 0 18px rgba(77,243,255,.3); }
+  .store[href="#"] { opacity: .55; pointer-events: none; }
+  .store .soon { display: none; position: absolute; top: -10px; right: -8px; background: var(--cream); color: #1d0b33;
+                 font-size: .68rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; }
+  .store[href="#"] .soon { display: block; }
+  .stores-wrap { position: relative; }
+
+  h2 { font-size: .85rem; letter-spacing: .3em; text-transform: uppercase; color: var(--cream); font-weight: 600; margin: 0 0 18px; }
+  section { padding: 40px 0; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .step { background: rgba(22,18,54,.85); border: 1px solid var(--line); border-radius: 18px; padding: 22px; }
+  .step .n { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 800;
+             border: 2.5px solid var(--cream); color: var(--cream); margin-bottom: 12px; }
+  .step h3 { margin: 0 0 6px; font-size: 1.15rem; }
+  .step p { margin: 0; color: var(--muted); }
+
+  .shots { display: flex; gap: 16px; overflow-x: auto; padding: 4px 4px 18px; scroll-snap-type: x mandatory; }
+  .shots img { height: 460px; width: auto; border-radius: 18px; scroll-snap-align: start; flex: none;
+               box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+
+  .features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px 28px; padding: 0; margin: 0; list-style: none; }
+  .features li { padding-left: 28px; position: relative; color: #dcdcee; }
+  .features li::before { content: "◆"; position: absolute; left: 0; color: var(--cream); }
+  .features b { color: #fff; }
+  .skins span { font-weight: 700; }
+
+  footer { border-top: 1px solid var(--line); margin-top: 32px; padding: 24px 0 40px; color: var(--muted); font-size: .9rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; }
+
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: 1fr; padding-top: 16px; }
+    .hero-art { order: -1; } .hero-art img { max-width: 200px; }
+    .steps { grid-template-columns: 1fr; }
+    .features { grid-template-columns: 1fr; }
+    .shots img { height: 380px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav><a href="../">← Tero Games</a><a href="privacy/">Privacy Policy</a></nav>
+
+  <header class="hero">
+    <div>
+      <h1>TERO</h1>
+      <p class="tag">hold to orbit · release to fling</p>
+      <p class="tag2">chain perfect catches</p>
+      <div class="stores">
+        <!-- Paste the Google Play URL in href (replace "#") -->
+        <a class="store" href="#" data-store="google-play" aria-label="Get Tero on Google Play">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4df3ff" d="M4 2.5v19l10-9.5z"/><path fill="#ffe9a8" d="M14 12l3.2 3.1 3.6-2a1.3 1.3 0 0 0 0-2.2l-3.6-2z"/><path fill="#ff3b5c" d="M4 21.5l13.2-6.4L14 12z"/><path fill="#7b6cff" d="M4 2.5l10 9.5 3.2-3.1z"/></svg>
+          <span><small>Get it on</small><b>Google Play</b></span><span class="soon">Coming soon</span>
+        </a>
+        <!-- Paste the App Store URL in href (replace "#") -->
+        <a class="store" href="#" data-store="app-store" aria-label="Download Tero on the App Store">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M16.4 12.6c0-2.4 2-3.5 2-3.6-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.8-.9-3-.8C6.9 7.3 5.4 8.2 4.6 9.7c-1.7 2.9-.4 7.2 1.2 9.6.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8s1.9.8 3.1.8c1.3 0 2.1-1.2 2.9-2.4.9-1.3 1.3-2.6 1.3-2.7 0 0-2.8-1-2.8-4zM14.1 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
+          <span><small>Download on the</small><b>App Store</b></span><span class="soon">Coming soon</span>
+        </a>
+      </div>
+    </div>
+    <div class="hero-art"><img src="img/icon.png" alt="Tero app icon: a glowing comet tethered to a star"></div>
+  </header>
+
+  <section>
+    <h2>How to play</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h3>Tap to launch</h3><p>Shoot your comet up into a sky full of stars.</p></div>
+      <div class="step"><div class="n">2</div><h3>Hold to orbit</h3><p>Tether to the nearest star and swing around it. Grab it inside its golden ring for a <b style="color:var(--cream)">PERFECT</b> catch.</p></div>
+      <div class="step"><div class="n">3</div><h3>Release to fling</h3><p>Let go at the right moment and fly to the next star. Keep climbing, the bottom of the screen is rising.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Screenshots</h2>
+    <div class="shots">
+      <img src="img/shot-1.png" alt="Tero screenshot 1" loading="lazy">
+      <img src="img/shot-2.png" alt="Tero screenshot 2: chain perfect catches" loading="lazy">
+      <img src="img/shot-3.png" alt="Tero screenshot 3" loading="lazy">
+      <img src="img/shot-4.png" alt="Tero screenshot 4" loading="lazy">
+      <img src="img/shot-5.png" alt="Tero screenshot 5" loading="lazy">
+      <img src="img/shot-6.png" alt="Tero screenshot 6" loading="lazy">
+    </div>
+  </section>
+
+  <section>
+    <h2>Features</h2>
+    <ul class="features">
+      <li><b>One-thumb controls.</b> Tap, hold, release. That's the whole game, and it never gets old.</li>
+      <li><b>Combos.</b> Perfect catches chain together for big points, and the chime rises with every link.</li>
+      <li><b>Danger and daring.</b> Stars burn out if you orbit too long. Red spike mines kill on contact, but grazing past one earns a CLOSE bonus.</li>
+      <li><b>Boosters.</b> Shield, magnet, anchor and double points help you push further.</li>
+      <li class="skins"><b>Trail skins.</b> Collect shards ◆ to unlock <span style="color:#ff8a4d">Ember</span>, <span style="color:#7dff6a">Venom</span>, <span style="color:#b79bff">Nova</span>, <span style="color:#ffd23f">Aurum</span> and <span style="color:var(--cyan)">Prism</span>.</li>
+      <li><b>Daily rewards</b> and online leaderboards with Google Play Games.</li>
+    </ul>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Tero Games</span>
+    <span><a href="privacy/">Privacy Policy</a> · <a href="mailto:tero102122@gmail.com">tero102122@gmail.com</a></span>
+  </div>
+</footer>
+</body>
+</html>

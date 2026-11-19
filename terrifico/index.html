@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terrifico: Traffic Puzzle</title>
+<meta name="description" content="Terrifico is a colorful traffic puzzle. Place road signs, guide every car home and dodge the crash!">
+<link rel="icon" href="img/icon.png">
+<style>
+  :root { --sky1: #4fb6f5; --sky2: #bfe8ff; --grass: #8fdc6a; --grass2: #6cc24d; --road: #4a5060;
+          --ink: #26304a; --muted: #5b6784; --orange: #e2603d; --blue: #1f6fcf; --card: #fff; --line: #e1e7f2;
+          --red: #ef4b4b; --yellow: #ffc233; --green: #3cc463; --purple: #a259e8; --cyan: #2ec5d8; }
+  * { box-sizing: border-box; }
+  html { background: var(--sky1); }
+  body { margin: 0; color: var(--ink); font: 17px/1.6 "Trebuchet MS", "Segoe UI", Roboto, system-ui, sans-serif; background: #f3f8ff; overflow-x: hidden; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; position: relative; }
+  a { color: var(--blue); }
+
+  /* ---- hero: sky, clouds, grass and road ---- */
+  .sky { position: relative; background: linear-gradient(180deg, var(--sky1), var(--sky2) 78%); overflow: hidden; }
+  .cloud { position: absolute; background: #fff; border-radius: 99px; opacity: .95; }
+  .cloud.c1 { width: 140px; height: 44px; top: 70px; left: 46%; }
+  .cloud.c2 { width: 90px; height: 32px; top: 150px; left: 8%; opacity: .8; }
+  .cloud.c3 { width: 120px; height: 38px; top: 96px; right: 4%; }
+  nav { display: flex; justify-content: space-between; padding: 18px 0; font-weight: 700; position: relative; z-index: 2; }
+  nav a { color: #fff; text-decoration: none; text-shadow: 0 2px 0 rgba(0,0,0,.15); }
+
+  .hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 28px; align-items: center; padding: 20px 0 40px; position: relative; z-index: 2; }
+  .logo { margin: 0; font-size: clamp(56px, 10vw, 104px); line-height: 1; font-weight: 900; letter-spacing: .02em; }
+  .logo span { display: inline-block; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; text-shadow: 0 6px 0 var(--ink); }
+  .logo span:nth-child(odd) { transform: rotate(-4deg); } .logo span:nth-child(even) { transform: rotate(3deg) translateY(4px); }
+  .tagline { color: #fff; font-size: clamp(1.3rem, 3vw, 2rem); font-weight: 800; margin: 18px 0 16px; text-shadow: 0 3px 0 rgba(38,48,74,.35); }
+  .pills { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+  .pill { background: #fff; border-radius: 99px; padding: 8px 18px; font-weight: 800; box-shadow: 0 4px 0 rgba(38,48,74,.18); }
+  .phone { width: 100%; max-width: 300px; margin: 0 auto; display: block; border-radius: 34px; border: 10px solid var(--ink); box-shadow: 0 18px 0 rgba(38,48,74,.15); transform: rotate(4deg); }
+
+  /* store buttons: an href of "#" shows "Coming soon"; paste the real store URL to activate */
+  .stores { display: flex; flex-wrap: wrap; gap: 12px; }
+  .store { position: relative; display: inline-flex; align-items: center; gap: 10px; min-width: 180px; padding: 10px 18px; border-radius: 16px;
+           background: var(--ink); color: #fff; text-decoration: none; line-height: 1.15; box-shadow: 0 5px 0 #141a2e; transition: transform .1s; }
+  .store svg { width: 26px; height: 26px; flex: none; }
+  .store small { display: block; font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; opacity: .8; }
+  .store b { font-size: 1.15rem; }
+  .store:not([href="#"]):active { transform: translateY(4px); box-shadow: 0 1px 0 #141a2e; }
+  .store[href="#"] { opacity: .65; pointer-events: none; }
+  .store .soon { display: none; position: absolute; top: -10px; right: -8px; background: var(--yellow); color: var(--ink); font-size: .7rem; font-weight: 800; padding: 2px 9px; border-radius: 99px; transform: rotate(4deg); }
+  .store[href="#"] .soon { display: block; }
+
+  .ground { height: 34px; background: var(--grass); border-top: 6px solid var(--grass2); position: relative; z-index: 1; }
+  .road { height: 74px; background: var(--road); border-top: 6px solid #d9dde6; border-bottom: 6px solid #d9dde6; position: relative; overflow: hidden; }
+  .road::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 6px; margin-top: -3px;
+                  background: repeating-linear-gradient(90deg, #fff 0 44px, transparent 44px 88px); }
+  .car { position: absolute; top: 14px; width: 66px; height: 34px; border-radius: 10px; animation: drive 14s linear infinite; }
+  .car::after { content: ""; position: absolute; right: 10px; top: 7px; width: 12px; height: 20px; border-radius: 4px; background: var(--ink); }
+  .car.r { background: var(--red); animation-delay: 0s; } .car.b { background: #3d8bf2; animation-delay: -4.6s; } .car.y { background: var(--yellow); animation-delay: -9.3s; }
+  @keyframes drive { from { left: -80px; } to { left: 100%; } }
+  @media (prefers-reduced-motion: reduce) { .car { animation: none; } .car.r { left: 8%; } .car.b { left: 40%; } .car.y { left: 72%; } }
+  .grass-band { height: 24px; background: var(--grass); }
+
+  /* ---- content ---- */
+  section { padding: 52px 0 12px; }
+  h2 { font-size: clamp(1.6rem, 3.6vw, 2.2rem); font-weight: 900; margin: 0 0 22px; }
+  h2 em { font-style: normal; color: var(--orange); }
+  .intro { font-size: 1.15rem; max-width: 62ch; color: var(--muted); margin: -8px 0 28px; }
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .card { background: var(--card); border-radius: 20px; padding: 20px; box-shadow: 0 5px 0 var(--line); border: 2px solid var(--line); }
+  .card .ico { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; color: #fff; margin-bottom: 12px; box-shadow: 0 4px 0 rgba(0,0,0,.12); }
+  .card h3 { margin: 0 0 6px; font-size: 1.1rem; font-weight: 900; }
+  .card p { margin: 0; color: var(--muted); font-size: .98rem; }
+
+  .shots { display: flex; gap: 16px; overflow-x: auto; padding: 4px 4px 20px; scroll-snap-type: x mandatory; }
+  .shots img { height: 480px; width: auto; border-radius: 22px; border: 6px solid var(--ink); scroll-snap-align: start; flex: none; }
+
+  .worlds { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .world { border-radius: 18px; padding: 22px 16px; font-weight: 900; font-size: 1.1rem; color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.2); box-shadow: 0 5px 0 rgba(38,48,74,.18); }
+  .w1 { background: linear-gradient(135deg, #7fd36a, #3fae4f); } .w2 { background: linear-gradient(135deg, #ffb35c, #ef6b4b); }
+  .w3 { background: linear-gradient(135deg, #3b2f80, #12153a); box-shadow: inset 0 0 0 2px #2ec5d8, 0 5px 0 rgba(38,48,74,.18); } .w4 { background: linear-gradient(135deg, #bfe6ff, #6fb8ff); }
+
+  .extras { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .extra { background: #fff; border-radius: 18px; padding: 18px 20px; border: 2px dashed #c9d4ea; }
+  .extra b { display: block; font-size: 1.08rem; margin-bottom: 2px; }
+  .extra span { color: var(--muted); font-size: .98rem; }
+  .note { color: var(--muted); font-size: .95rem; margin-top: 14px; }
+
+  footer { margin-top: 56px; background: var(--grass); border-top: 6px solid var(--grass2); padding: 22px 0 34px; font-weight: 700; }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; }
+  footer a { color: var(--ink); }
+
+  @media (max-width: 860px) { .cards, .worlds { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 680px) {
+    .hero { grid-template-columns: 1fr; }
+    .cloud.c2, .cloud.c3 { display: none; }
+    .phone { max-width: 220px; }
+    .extras { grid-template-columns: 1fr; }
+    .shots img { height: 400px; }
+  }
+  @media (max-width: 420px) { .cards { grid-template-columns: 1fr; } .logo span { -webkit-text-stroke-width: 2px; text-shadow: 0 4px 0 var(--ink); } }
+</style>
+</head>
+<body>
+<div class="sky">
+  <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+  <div class="wrap">
+    <nav><a href="../">← Tero Games</a><a href="privacy/">Privacy Policy</a></nav>
+    <header class="hero">
+      <div>
+        <h1 class="logo" aria-label="Terrifico"><span style="color:var(--red)">T</span><span style="color:var(--yellow)">E</span><span style="color:var(--orange)">R</span><span style="color:var(--green)">R</span><span style="color:var(--purple)">I</span><span style="color:var(--yellow)">F</span><span style="color:var(--cyan)">I</span><span style="color:var(--red)">C</span><span style="color:#3d8bf2">O</span></h1>
+        <p class="tagline">Place the signs. Save the traffic.</p>
+        <div class="pills"><span class="pill">40 levels</span><span class="pill">4 worlds</span><span class="pill">Plays offline</span></div>
+        <div class="stores">
+          <!-- Paste the Google Play URL in href (replace "#") -->
+          <a class="store" href="#" data-store="google-play" aria-label="Get Terrifico on Google Play">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#3cc463" d="M4 2.5v19l10-9.5z"/><path fill="#ffc233" d="M14 12l3.2 3.1 3.6-2a1.3 1.3 0 0 0 0-2.2l-3.6-2z"/><path fill="#ef4b4b" d="M4 21.5l13.2-6.4L14 12z"/><path fill="#3d8bf2" d="M4 2.5l10 9.5 3.2-3.1z"/></svg>
+            <span><small>Get it on</small><b>Google Play</b></span><span class="soon">Coming soon!</span>
+          </a>
+          <!-- Paste the App Store URL in href (replace "#") -->
+          <a class="store" href="#" data-store="app-store" aria-label="Download Terrifico on the App Store">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M16.4 12.6c0-2.4 2-3.5 2-3.6-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.8-.9-3-.8C6.9 7.3 5.4 8.2 4.6 9.7c-1.7 2.9-.4 7.2 1.2 9.6.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8s1.9.8 3.1.8c1.3 0 2.1-1.2 2.9-2.4.9-1.3 1.3-2.6 1.3-2.7 0 0-2.8-1-2.8-4zM14.1 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
+            <span><small>Download on the</small><b>App Store</b></span><span class="soon">Coming soon!</span>
+          </a>
+        </div>
+      </div>
+      <img class="phone" src="img/02-watch-them-drive.png" alt="Terrifico gameplay: cars driving along a road with arrow signs">
+    </header>
+  </div>
+  <div class="ground"></div>
+  <div class="road" aria-hidden="true"><div class="car r"></div><div class="car b"></div><div class="car y"></div></div>
+  <div class="grass-band"></div>
+</div>
+
+<div class="wrap">
+  <section>
+    <h2>Cars drive themselves. <em>Keep them from crashing!</em></h2>
+    <p class="intro">Place arrows and stop signs on the road, press GO, and watch your plan come to life as every car races to the garage of its own color. One wrong turn and BOOM! Back to the drawing board.</p>
+    <div class="cards">
+      <div class="card"><div class="ico" style="background:#3d8bf2">➜</div><h3>Place the signs</h3><p>Arrows turn cars at junctions. Colored arrows only steer cars of that color. Stop signs hold a car for one beat.</p></div>
+      <div class="card"><div class="ico" style="background:var(--green)">▶</div><h3>Watch them drive</h3><p>See every route as you plan, then hit GO. Collect coins, park every car and celebrate with confetti!</p></div>
+      <div class="card"><div class="ico" style="background:var(--purple)">✦</div><h3>Think ahead</h3><p>Dead ends, convoys, paint shops that change a car's color, and bridges where traffic crosses overhead.</p></div>
+      <div class="card"><div class="ico" style="background:var(--yellow)">★</div><h3>Chase 3 stars</h3><p>Solve each level with the fewest signs for a perfect score. Stuck? A hint shows where the next sign goes.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Screenshots</h2>
+    <div class="shots">
+      <img src="img/01-place-signs.png" alt="Place the signs" loading="lazy">
+      <img src="img/02-watch-them-drive.png" alt="Watch them drive" loading="lazy">
+      <img src="img/03-avoid-the-crash.png" alt="Avoid the crash" loading="lazy">
+      <img src="img/04-paint-and-bridges.png" alt="Paint shops and bridges" loading="lazy">
+      <img src="img/05-three-stars.png" alt="Three stars" loading="lazy">
+      <img src="img/06-four-worlds.png" alt="Four worlds" loading="lazy">
+      <img src="img/07-frosty-peaks.png" alt="Frosty Peaks" loading="lazy">
+      <img src="img/08-home.png" alt="Home screen" loading="lazy">
+    </div>
+  </section>
+
+  <section>
+    <h2>40 levels in 4 worlds</h2>
+    <div class="worlds">
+      <div class="world w1">Green Meadows</div>
+      <div class="world w2">Sunset City</div>
+      <div class="world w3">Neon Night</div>
+      <div class="world w4">Frosty Peaks</div>
+    </div>
+    <p class="note">Simple one-tap controls, deep puzzles. No timers and no pressure. Daily gift, coin rewards and perfect-streak bonuses.</p>
+  </section>
+
+  <section>
+    <h2>Want more? <em>Extra packs</em></h2>
+    <div class="extras">
+      <div class="extra"><b>Tunnel Canyon</b><span>100 new levels in 5 new worlds, with tunnels that carry cars across the map.</span></div>
+      <div class="extra"><b>Level Workshop</b><span>Build your own puzzles, get a fresh AI Generated level at a tap, and share level codes. Friends play your codes for free.</span></div>
+      <div class="extra"><b>Custom Garage</b><span>5 new vehicles and 3 exhaust trails.</span></div>
+      <div class="extra"><b>Everything Bundle</b><span>All three packs plus the No-Ads Pass in one purchase.</span></div>
+    </div>
+    <p class="note">The 40 main levels are free to finish. Each pack is an optional one-time purchase, and buying any of them removes the ads.</p>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Tero Games</span>
+    <span><a href="privacy/">Privacy Policy</a> · <a href="mailto:tero102122@gmail.com">tero102122@gmail.com</a></span>
+  </div>
+</footer>
+</body>
+</html>
