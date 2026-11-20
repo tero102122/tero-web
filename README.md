@@ -6,6 +6,7 @@ Plain HTML/CSS, no build step. Push it to GitHub and turn on **Settings → Page
 index.html                         Tero Games home (all games)
 tero/index.html                    Tero
 tero/privacy/                      Tero privacy policy
+tero/support/                      Tero support page (the App Store "Support URL")
 terrifico/index.html               Terrifico
 terrifico/privacy/                 Terrifico privacy policy
 rico-safari-salon/index.html       Rico's Safari Salon
