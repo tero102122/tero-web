@@ -12,6 +12,7 @@ terrifico/privacy/                 Terrifico privacy policy
 terrifico/support/                 Terrifico support page (the App Store "Support URL")
 rico-safari-salon/index.html       Rico's Safari Salon
 rico-safari-salon/privacy/         Rico's Safari Salon privacy policy
+rico-safari-salon/support/         Rico's Safari Salon support page (the App Store "Support URL")
 app-ads.txt                        AdMob seller file
 ```
 
